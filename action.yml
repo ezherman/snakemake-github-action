@@ -73,6 +73,21 @@ runs:
           - snakemake ==${{ inputs.snakemake-version }}
         EOF
 
+    - name: Generate random conda installation suffix
+      shell: bash -el {0}
+      run: |
+        echo "CONDA_INSTALL_SUFFIX=${RANDOM}${RANDOM}" >> "$GITHUB_ENV"
+
+    - name: Setup conda
+      uses: conda-incubator/setup-miniconda@v3
+      with:
+        channels: conda-forge,bioconda
+        channel-priority: strict
+        miniforge-version: latest
+        environment-file: .snakemake.environment.yaml
+        activate-environment: snakemake
+        installation-dir: ${{ runner.temp }}/snakemake_miniconda_${{ env.CONDA_INSTALL_SUFFIX }}
+
     - name: Setup conda
       uses: conda-incubator/setup-miniconda@v3
       with:
